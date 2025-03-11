@@ -8,8 +8,8 @@ function App() {
   return (
     <div>
       {/* <UseRefTest /> */}
-      <Webcam />
-      {/* <PackageWebcam /> */}
+      {/* <Webcam /> */}
+      <PackageWebcam />
     </div>
   );
 }

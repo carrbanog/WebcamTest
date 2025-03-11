@@ -3,7 +3,9 @@ import TestWebcam from "react-webcam";
 
 const Webcam = () => {
   const webcamRef = useRef(null);
+  const videoRef = useRef(null);
   console.log(webcamRef.current);
+  console.log(videoRef);
   return (
     <div>
       <h2>웹캠</h2>

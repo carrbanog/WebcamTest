@@ -1,0 +1,125 @@
+
+import React, { useRef, useState } from "react";
+import Webcam from "react-webcam";
+React에서 useRef 와 useState 훅을 가져옵니다.
+useRef: 특정 DOM 요소(Webcam, MediaRecorder 등)에 직접 접근할 때 사용
+useState: 컴포넌트의 상태 관리 (녹화 여부, 녹화된 영상 저장)
+Webcam 라이브러리를 가져와 웹캠 스트림을 받아옵니다.
+2️⃣ 컴포넌트 정의 및 상태(state) 설정
+
+const PackageWebcam = () => {
+  const webcamRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [recording, setRecording] = useState(false);
+  const [videoBlob, setVideoBlob] = useState(null);
+webcamRef: 웹캠(Webcam 컴포넌트) 요소를 직접 제어하기 위한 참조
+mediaRecorderRef: MediaRecorder 객체를 저장하는 참조 (녹화 제어)
+recording: 녹화 중인지 여부를 저장하는 상태 (true = 녹화 중, false = 정지)
+videoBlob: 녹화된 영상 데이터를 저장하는 상태 (Blob 형태)
+3️⃣ console.log로 웹캠과 미디어 레코더 확인
+
+  console.log(webcamRef);
+  console.log(mediaRecorderRef);
+웹캠과 미디어 레코더(MediaRecorder)의 상태를 개발자 도구(Console)에서 확인 가능
+4️⃣ 녹화 시작 함수
+
+  const startRecording = () => {
+    setRecording(true);
+    const stream = webcamRef.current.stream;
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    const chunks = [];
+setRecording(true): 녹화 상태를 true로 변경
+webcamRef.current.stream: 웹캠에서 비디오 스트림을 가져옴
+mediaRecorderRef.current = new MediaRecorder(stream):
+웹캠 스트림을 이용해 MediaRecorder 객체 생성
+녹화할 데이터를 저장할 배열 chunks 선언
+
+    mediaRecorderRef.current.ondataavailable = (event) =>
+      chunks.push(event.data);
+녹화 중 데이터가 생성될 때마다 (ondataavailable), chunks 배열에 저장
+
+    mediaRecorderRef.current.onstop = () => {
+      const videoBlob = new Blob(chunks, { type: "video/webm" });
+      setVideoBlob(videoBlob);
+    };
+녹화가 중지되면 (onstop)
+chunks에 저장된 데이터를 Blob 형식(video/webm)으로 변환
+videoBlob 상태에 저장
+
+    mediaRecorderRef.current.start();
+  };
+mediaRecorderRef.current.start(); → 녹화 시작
+5️⃣ 녹화 중지 함수
+
+  const stopRecording = () => {
+    setRecording(false);
+    mediaRecorderRef.current.stop();
+  };
+setRecording(false): 녹화 상태를 false로 변경
+mediaRecorderRef.current.stop();: 녹화 중지 & onstop 이벤트 실행
+6️⃣ UI (웹캠 & 버튼)
+jsx
+복사
+편집
+  return (
+    <div>
+      <h2>📷 노트북 웹캠</h2>
+      <Webcam
+        ref={webcamRef}
+        audio={false} // 🎤 마이크 비활성화 (원하면 true로 변경)
+        screenshotFormat="image/jpeg" // 🖼️ 캡처 포맷 지정
+        videoConstraints={{
+          width: 1280,
+          height: 720,
+          facingMode: "user", // 📷 전면 카메라 사용
+        }}
+        style={{ width: "100%", maxWidth: "600px" }}
+      />
+Webcam 컴포넌트를 렌더링
+ref={webcamRef} → 웹캠 요소 제어 가능
+audio={false} → 오디오 녹음 비활성화
+screenshotFormat="image/jpeg" → 캡처 이미지 형식
+videoConstraints → 웹캠 설정 (1280x720, 전면 카메라)
+7️⃣ 녹화 버튼 UI
+jsx
+복사
+편집
+      <div>
+        {recording ? (
+          <button onClick={stopRecording}>⏹ 녹화 중지</button>
+        ) : (
+          <button onClick={startRecording}>🔴 녹화 시작</button>
+        )}
+      </div>
+녹화 중(recording이 true) → "⏹ 녹화 중지" 버튼 표시
+녹화 중이 아닐 때 (false) → "🔴 녹화 시작" 버튼 표시
+8️⃣ 녹화된 영상 표시 & 다운로드
+jsx
+복사
+편집
+      {videoBlob && (
+        <div>
+          <h3>📁 녹화된 영상</h3>
+          <video src={URL.createObjectURL(videoBlob)} controls width="640" />
+          <a
+            href={URL.createObjectURL(videoBlob)}
+            download="recorded-video.webm"
+          >
+            📥 다운로드
+          </a>
+        </div>
+      )}
+    </div>
+  );
+✅ 녹화된 영상이 존재하면 (videoBlob이 null이 아니면)
+<video> 태그로 화면에 녹화된 영상을 출력
+URL.createObjectURL(videoBlob)을 사용해 Blob 데이터를 URL로 변환
+controls 속성 → 사용자가 재생/일시 정지/볼륨 조절 가능
+<a> 태그를 이용해 다운로드 링크 제공
+href={URL.createObjectURL(videoBlob)} → 녹화된 영상을 다운로드 가능
+download="recorded-video.webm" → 파일 이름을 recorded-video.webm으로 설정
+📌 최종 실행 흐름
+웹캠이 실행됨
+사용자가 "🔴 녹화 시작" 버튼을 클릭하면 녹화 시작
+사용자가 "⏹ 녹화 중지" 버튼을 클릭하면 녹화 중지
+녹화된 영상이 화면에 표시되고 다운로드 가능
