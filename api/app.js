@@ -4,8 +4,15 @@ const cors = require("cors");
 const multer = require("multer");
 const mongoose = require("mongoose");
 const Video = require("./models/video");
+const nodemailer = require("nodemailer");
+const twilio = require("twilio");
 require("dotenv").config();
 
+const accountSid = process.env.TWILIO_SID;
+const authToken = process.env.TWILIO_TOKEN;
+const twilioPhoneNumber = process.env.TWILIO_NUM;
+const phoneNum = process.env.PHONE_NUM;
+const client = new twilio(accountSid, authToken);
 const app = express();
 
 app.use(
@@ -40,6 +47,53 @@ app.post("/upload", upload.single("video"), async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Db저장 실패" });
+  }
+});
+
+app.get("/videos", async (req, res) => {
+  try {
+    const videos = await Video.find();
+    console.log(videos);
+    res.json(videos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "영상 목록 가져오기 실패" });
+  }
+});
+
+app.get("/video/:id", async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id);
+    if (!video) {
+      return res.status(404).json({ message: "영상이 없습니다." });
+    }
+
+    const filePath = `uploads/${video.fileName}`;
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: "파일을 찾을 수 없습니다." });
+    }
+
+    res.sendFile(filePath, { root: "." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "영상 스트리밍 실패" });
+  }
+});
+
+app.post("/send-sms", async (req, res) => {
+  const { to, message } = req.body;
+  console.log(req.body);
+
+  try {
+    const response = await client.messages.create({
+      body: message,
+      from: twilioPhoneNumber,
+      to: phoneNum,
+    });
+    console.log(response);
+    res.json({ success: true, sid: response.sid });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
