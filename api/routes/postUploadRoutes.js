@@ -1,5 +1,11 @@
 const express = require("express");
-const router = express.Router();
-const postUploadController = require("../controllers/postUploadController");
+const multer = require("multer");
+const uploadVideo = require("../controllers/postUploadController");
 
-router.route("/").post(postUploadController);
+const router = express.Router();
+
+const upload = multer({ dest: "uploads/" });
+
+router.route("/").post(upload.single("video"), uploadVideo);
+
+module.exports = router;

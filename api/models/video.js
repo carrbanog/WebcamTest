@@ -5,6 +5,8 @@ const VideoSchema = new mongoose.Schema({
   fileName: String,
   mimeType: String,
   uploadDate: { type: Date, default: Date.now },
+  latitude: Number,
+  longitude: Number,
 });
 const Video = mongoose.model("Video", VideoSchema);
 
