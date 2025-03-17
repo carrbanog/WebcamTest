@@ -30,14 +30,25 @@ const PackageWebcam = () => {
     mediaRecorderRef.current.onstop = async () => {
       const videoBlob = new Blob(chunks, { type: "video/webm" });
       setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
-      await uploadVideo(videoBlob);
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log(`위도: ${latitude}, 경도: ${longitude}`);
+
+          await uploadVideo(videoBlob, latitude, longitude);
+          // await sendSMS(latitude, longitude);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     };
     mediaRecorderRef.current.start();
   };
   const stopRecording = async () => {
     setRecording(false);
     mediaRecorderRef.current.stop(); //녹화 중지, onstop 이벤트 실행
-    await sendSMS();
   };
   return (
     <div>
