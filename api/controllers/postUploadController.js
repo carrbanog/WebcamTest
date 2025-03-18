@@ -9,7 +9,7 @@ const uploadVideo = async (req, res) => {
 
   try {
     const video = new Video({
-      fileName: req.file.originalname || `${Date.now()}.webm`,
+      fileName: req.file.originalname,
       mimeType: req.file.mimetype,
       latitude: latitude,
       longitude: longitude,

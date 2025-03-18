@@ -2,7 +2,13 @@ import axios from "axios";
 
 export const uploadVideo = async (videoBlob, latitude, longitude) => {
   const formData = new FormData();
-  formData.append("video", videoBlob, "recorded-video.webm");
+  let videoNumber = localStorage.getItem("videoNumber") || 0;
+  videoNumber = parseInt(videoNumber, 10) + 1; // videoNumber 증가
+
+  const fileName = `video${videoNumber}.webm`;
+  console.log(fileName);
+  console.log("파일 이름", fileName);
+  formData.append("video", videoBlob, fileName);
   formData.append("latitude", latitude);
   formData.append("longitude", longitude);
 
@@ -19,6 +25,9 @@ export const uploadVideo = async (videoBlob, latitude, longitude) => {
     );
     console.log(response);
     alert(response.data.message);
+
+    // videoNumber를 로컬 스토리지에 저장
+    localStorage.setItem("videoNumber", videoNumber); // videoNumber 값 저장
   } catch (err) {
     console.error(err);
   }

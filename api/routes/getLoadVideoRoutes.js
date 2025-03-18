@@ -7,6 +7,6 @@ const {
 const router = express.Router();
 
 router.get("/", getVideos);
-router.get("/", getVideoById);
+router.get("/:id", getVideoById);
 
 module.exports = router;

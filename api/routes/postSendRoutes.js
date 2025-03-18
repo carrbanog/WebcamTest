@@ -1,6 +1,8 @@
 const express = require("express");
-const { sendSms } = require("../controllers/postSendController");
+const sendSMS = require("../controllers/postSendController");
 
 const router = express.Router();
+
+router.post("/", sendSMS);
 
 module.exports = router;
