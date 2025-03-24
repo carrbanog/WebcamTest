@@ -11,12 +11,18 @@ const SaveVideo = () => {
         const response = await axios.get("http://localhost:5000/videos");
         console.log("get", response.data);
         setSavedVideo(response.data);
+        // response.data.map((e) => console.log(e.fileName));
+        // const response2 = await axios.get(
+        //   `http://localhost:5000/videos/${response.data[0].prevFileName}`
+        // );
+        // console.log(response2);
       } catch (err) {
         console.error(err);
       }
     };
     fetchVideos();
   }, []);
+
   savedVideo.map((e) => console.log("파일 이름", e.fileName));
   // console.log(savedVideo);
   return (
@@ -30,15 +36,25 @@ const SaveVideo = () => {
         <ul>
           {savedVideo.map((video) => (
             <li key={video._id}>
-              <h3>{video.fileName}</h3>
-              <h4>{`위도: ${video.latitude}`}</h4>
-              <h4>{`위도: ${video.longitude}`}</h4>
-              <video controls width="640">
-                <source
-                  src={`http://localhost:5000/videos/${video.fileName}`}
-                  type={video.mimeType}
-                />
-              </video>
+              <div className="video">
+                <h3>{video.fileName}</h3>
+                <h4>{`위도: ${video.latitude}`}</h4>
+                <h4>{`위도: ${video.longitude}`}</h4>
+                <video controls width="640">
+                  <source
+                    src={`http://localhost:5000/videos/${video.fileName}`}
+                    type={video.mimeType}
+                  />
+                </video>
+              </div>
+              <div className="prevVideo">
+                <h3>{video.prevFileName}</h3>
+                <video controls width="640">
+                  <source
+                    src={`http://localhost:5000/videos/${video.prevFileName}`}
+                  />
+                </video>
+              </div>
             </li>
           ))}
         </ul>

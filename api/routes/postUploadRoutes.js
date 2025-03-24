@@ -12,25 +12,45 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.resolve(__dirname, "../uploads"); // uploads 폴더 경로
-    cb(null, uploadDir); // uploads 폴더로 파일 저장
+    const uploadDir = path.resolve(__dirname, "../uploads");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    let fileNumber = 1;
-    let fileName = `video${fileNumber}.webm`; // video1.webm
+    const fileExt = path.extname(file.originalname);
+    let fileName;
 
-    // 같은 이름의 파일이 존재하는지 확인
-    while (fs.existsSync(path.resolve(__dirname, "../uploads", fileName))) {
-      fileNumber++; // 파일 번호 증가
-      fileName = `video${fileNumber}.webm`; // video2.webm, video3.webm 등으로 변경
+    if (file.fieldname === "prevVideo") {
+      fileName = "prevVideo1" + fileExt;
+      let fileNumber = 1;
+
+      // prevVideo 파일명 중복 체크
+      while (fs.existsSync(path.resolve(__dirname, "../uploads", fileName))) {
+        fileNumber++;
+        fileName = `prevVideo${fileNumber}${fileExt}`;
+      }
+    } else if (file.fieldname === "video") {
+      fileName = "video1" + fileExt;
+      let fileNumber = 1;
+
+      // video 파일명 중복 체크
+      while (fs.existsSync(path.resolve(__dirname, "../uploads", fileName))) {
+        fileNumber++;
+        fileName = `video${fileNumber}${fileExt}`;
+      }
     }
 
-    cb(null, fileName); // 파일 이름 설정
+    cb(null, fileName);
   },
 });
 
 const upload = multer({ storage: storage });
 
-router.route("/").post(upload.single("video"), uploadVideo);
+router.route("/").post(
+  upload.fields([
+    { name: "prevVideo", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  uploadVideo
+);
 
 module.exports = router;

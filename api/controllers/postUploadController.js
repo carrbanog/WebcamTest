@@ -1,16 +1,20 @@
 const Video = require("../models/video");
 
 const uploadVideo = async (req, res) => {
-  console.log("받은 파일: ", req.file);
+  console.log("받은 파일: ", req.files);
   const { latitude, longitude } = req.body;
-  if (!req.file) {
+
+  const prevVideoFile = req.files.prevVideo ? req.files.prevVideo[0] : null;
+  const videoFile = req.files.video ? req.files.video[0] : null;
+  if (!prevVideoFile || !videoFile) {
     return res.status(400).json({ message: "파일이 없습니다." });
   }
 
   try {
     const video = new Video({
-      fileName: req.file.originalname,
-      mimeType: req.file.mimetype,
+      fileName: videoFile.originalname,
+      prevFileName: prevVideoFile.originalname,
+      mimeType: videoFile.mimetype,
       latitude: latitude,
       longitude: longitude,
     });

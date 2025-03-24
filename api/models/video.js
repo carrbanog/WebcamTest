@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const VideoSchema = new mongoose.Schema({
   fileName: String,
+  prevFileName: String,
   mimeType: String,
   uploadDate: { type: Date, default: Date.now },
   latitude: Number,

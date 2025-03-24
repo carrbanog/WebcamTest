@@ -1,13 +1,18 @@
 import axios from "axios";
 
-export const uploadVideo = async (videoBlob, latitude, longitude) => {
+export const uploadVideo = async (
+  prevVideoBlob,
+  videoBlob,
+  latitude,
+  longitude
+) => {
   const formData = new FormData();
   let videoNumber = localStorage.getItem("videoNumber") || 0;
   videoNumber = parseInt(videoNumber, 10) + 1; // videoNumber 증가
 
+  const prevFileName = `prevVideo${videoNumber}.webm`;
   const fileName = `video${videoNumber}.webm`;
-  console.log(fileName);
-  console.log("파일 이름", fileName);
+  formData.append("prevVideo", prevVideoBlob, prevFileName);
   formData.append("video", videoBlob, fileName);
   formData.append("latitude", latitude);
   formData.append("longitude", longitude);

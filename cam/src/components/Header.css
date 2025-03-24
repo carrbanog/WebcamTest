@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:opsz,wght@10..72,100..900&family=Oswald:wght@200..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
+
+a {
+  text-decoration: none;
+}
+
+header {
+  width: 100%;
+  height: 100%;
+  /* background-color: red; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* padding: 15px; */
+  border-bottom: 1px solid #ccc;
+}
+
+header a {
+  font-family: "Big Shoulders Stencil";
+  font-size: 25px;
+  color: black;
+}
