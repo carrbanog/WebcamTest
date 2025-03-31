@@ -8,7 +8,7 @@ import Header from "./components/Header";
 function App() {
   return (
     <Router>
-      <Header />
+      {/* <Header /> */}
       <Routes>
         {/* <UseRefTest /> */}
         {/* <Webcam /> */}
