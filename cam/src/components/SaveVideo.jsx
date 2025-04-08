@@ -1,31 +1,77 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import "./SaveVideo.css";
+import { callSavedVideo } from "../api/api";
+import Video from "./Video";
 
 const SaveVideo = () => {
   const [savedVideo, setSavedVideo] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const BASE_URL1 = "http://localhost:5000";
+  const renderStartTime = useRef(performance.now());
+  const dataFetchStartTime = useRef(0);
+  const hasLoggedPerformance = useRef(false);
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/videos");
-        console.log("get", response.data);
-        setSavedVideo(response.data);
-        // response.data.map((e) => console.log(e.fileName));
-        // const response2 = await axios.get(
-        //   `http://localhost:5000/videos/${response.data[0].prevFileName}`
-        // );
-        // console.log(response2);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchVideos();
+  const fetchVideos = useCallback(async () => {
+    try {
+      dataFetchStartTime.current = performance.now();
+      const data = await callSavedVideo();
+      const fetchTime = performance.now() - dataFetchStartTime.current;
+      console.log(`데이터 로딩 시간: ${fetchTime.toFixed(2)}ms`);
+      setSavedVideo(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      setIsLoading(false);
+    }
   }, []);
 
-  savedVideo.map((e) => console.log("파일 이름", e.fileName));
-  // console.log(savedVideo);
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
+
+  const performanceMetrics = useMemo(() => {
+    if (savedVideo.length > 0 && !hasLoggedPerformance.current) {
+      const renderTime = performance.now() - renderStartTime.current;
+      hasLoggedPerformance.current = true;
+
+      return {
+        dataFetchTime: performance.now() - dataFetchStartTime.current,
+        renderTime,
+        totalVideos: savedVideo.length,
+      };
+    }
+    return null;
+  }, [savedVideo]);
+
+  useEffect(() => {
+    if (performanceMetrics) {
+      console.log("=== 성능 측정 결과 ===");
+      console.log(
+        `데이터 로딩 시간: ${performanceMetrics.dataFetchTime.toFixed(2)}ms`
+      );
+      console.log(`렌더링 시간: ${performanceMetrics.renderTime.toFixed(2)}ms`);
+      console.log(`총 비디오 수: ${performanceMetrics.totalVideos}`);
+      console.log("=====================");
+    }
+  }, [performanceMetrics]);
+
+  if (isLoading) {
+    return <div className="loading">로딩 중...</div>;
+  }
+
+  if (error) {
+    return <div className="error">에러 발생: {error}</div>;
+  }
+
   return (
     <div className="save-video-container">
       <div className="header">
@@ -40,30 +86,7 @@ const SaveVideo = () => {
       ) : (
         <div className="video-list">
           {savedVideo.map((video) => (
-            <div key={video._id} className="video-item">
-              <div className="video-pair">
-                <div className="video-container">
-                  <h3 className="video-title">이전 영상</h3>
-                  <h4 className="video-info">{`위도: ${video.latitude}, 경도: ${video.longitude}`}</h4>
-                  <video controls className="video-player">
-                    <source
-                      src={`http://localhost:5000/videos/${video.prevFileName}`}
-                      type="video/webm"
-                    />
-                  </video>
-                </div>
-                <div className="video-container">
-                  <h3 className="video-title">현재 영상</h3>
-                  <h4 className="video-info">{`위도: ${video.latitude}, 경도: ${video.longitude}`}</h4>
-                  <video controls className="video-player">
-                    <source
-                      src={`http://localhost:5000/videos/${video.fileName}`}
-                      type={video.mimeType}
-                    />
-                  </video>
-                </div>
-              </div>
-            </div>
+            <Video key={video._id} video={video} baseUrl={BASE_URL1} />
           ))}
         </div>
       )}
@@ -71,4 +94,4 @@ const SaveVideo = () => {
   );
 };
 
-export default SaveVideo;
+export default React.memo(SaveVideo);

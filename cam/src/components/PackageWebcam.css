@@ -180,3 +180,95 @@ label {
     padding: 0.8rem 1.5rem;
   }
 }
+
+/* 전화번호 폼 스타일 */
+.phone-form-container {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.phone-form {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}
+
+.phone-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.phone-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0069d9;
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .phone-form {
+    background-color: #2d2d2d;
+  }
+
+  .form-group label {
+    color: #fff;
+  }
+
+  .phone-input {
+    background-color: #1a1a1a;
+    border-color: #444;
+    color: #fff;
+  }
+
+  .phone-input:focus {
+    border-color: #0d6efd;
+  }
+
+  .submit-button {
+    background-color: #0d6efd;
+  }
+
+  .submit-button:hover {
+    background-color: #0b5ed7;
+  }
+}

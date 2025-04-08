@@ -1,0 +1,118 @@
+.input-num-container {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.input-num-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-num-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.input-num-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-num-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.input-num-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.input-num-button:hover {
+  background-color: #0056b3;
+}
+
+.saved-number {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #495057;
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .input-num-container {
+    background-color: #2d2d2d;
+  }
+
+  .input-num-label {
+    color: #fff;
+  }
+
+  .input-num-input {
+    background-color: #1a1a1a;
+    border-color: #444;
+    color: #fff;
+  }
+
+  .input-num-input:focus {
+    border-color: #0d6efd;
+  }
+
+  .input-num-button {
+    background-color: #0d6efd;
+  }
+
+  .input-num-button:hover {
+    background-color: #0b5ed7;
+  }
+
+  .saved-number {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .input-num-form {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .input-num-label {
+    margin-bottom: 0;
+  }
+
+  .input-num-input {
+    flex: 1;
+  }
+
+  .input-num-button {
+    width: auto;
+  }
+}

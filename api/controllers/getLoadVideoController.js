@@ -5,7 +5,7 @@ const path = require("path");
 const getVideos = async (req, res) => {
   try {
     const videos = await Video.find();
-    // console.log(videos);
+    // console.log("videos:", videos);
     res.json(videos);
   } catch (err) {
     console.error(err);
@@ -19,16 +19,16 @@ const getVideoById = async (req, res) => {
     const video = await Video.findOne({
       $or: [{ fileName: req.params.id }, { prevFileName: req.params.id }],
     });
-    console.log("video", video, "____________________");
+    // console.log("video", video, "____________________");
     if (!video) {
       return res.status(404).json({ message: "영상이 없습니다." });
     }
-    console.log("dirName: ", __dirname);
+    // console.log("dirName: ", __dirname);
 
     let filePath;
     if (req.params.id === video.fileName) {
       filePath = path.resolve(__dirname, "../uploads", video.fileName);
-      console.log("videoFilePath: ", filePath);
+      // console.log("videoFilePath: ", filePath);
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ message: "파일을 찾을 수 없습니다." });
       }
@@ -38,7 +38,7 @@ const getVideoById = async (req, res) => {
     // 요청한 ID가 prevFileName과 일치하면 prevFilePath 반환
     if (req.params.id === video.prevFileName) {
       filePath = path.resolve(__dirname, "../uploads", video.prevFileName);
-      console.log("prevFilePath: ", filePath);
+      // console.log("prevFilePath: ", filePath);
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ message: "파일을 찾을 수 없습니다." });
       }

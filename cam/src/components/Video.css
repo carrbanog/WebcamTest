@@ -1,0 +1,70 @@
+.video-item {
+  margin-bottom: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.video-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.video-container {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.video-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.video-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.video-player {
+  width: 100%;
+  max-height: 400px;
+  border-radius: 4px;
+  background-color: #000;
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .video-item {
+    background-color: #2d2d2d;
+  }
+
+  .video-container {
+    background-color: #1a1a1a;
+  }
+
+  .video-title {
+    color: #fff;
+  }
+
+  .video-info {
+    color: #ccc;
+  }
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+  .video-pair {
+    flex-direction: row;
+  }
+
+  .video-container {
+    flex: 1;
+  }
+}

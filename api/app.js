@@ -11,14 +11,21 @@ const getLoadVideoRoutes = require("./routes/getLoadVideoRoutes");
 const postSendRouter = require("./routes/postSendRoutes");
 
 const app = express();
-
+const local = "http://localhost:5173";
 app.use(
   cors({
-    origin: "http://localhost:5173", // ✅ 프론트엔드 URL 허용
+    origin: local, // ✅ 프론트엔드 URL 허용
     credentials: true, // ✅ 쿠키, 인증 정보 포함 가능
   })
 );
-mongoose.connect(process.env.DB_CONNECT);
+mongoose
+  .connect(process.env.DB_CONNECT)
+  .then(() => {
+    console.log("✔️ MongoDB 연결 성공!");
+  })
+  .catch((err) => {
+    console.error("🚨 MongoDB 연결 실패:", err.message);
+  });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

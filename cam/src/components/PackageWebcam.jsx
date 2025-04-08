@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { uploadVideo, sendSMS } from "../api/api";
 import warningSound from "../../public/warning-sound.wav";
 import "./PackageWebcam.css";
+import InputNum from "./InputNum";
 
 const PackageWebcam = () => {
   const webcamRef = useRef(null);
@@ -93,10 +94,15 @@ const PackageWebcam = () => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          console.log(prevVideoBlob[0]);
+          const phoneNum = localStorage.getItem("phoneNum"); // 📱 번호 불러오기
+          if (!phoneNum) {
+            alert("휴대폰 번호가 저장되어 있지 않습니다!");
+            return;
+          }
+          console.log(phoneNum);
           await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
           // await uploadVideo(prevVideoBlob[0], latitude, longitude);
-          // await sendSMS(latitude, longitude);
+          await sendSMS(latitude, longitude, phoneNum);
         },
         (error) => {
           console.error(error);
@@ -114,6 +120,7 @@ const PackageWebcam = () => {
       <button className="record-button" onClick={startBackgroundRecording}>
         이전 녹화 시작
       </button>
+      <InputNum />
       {/* <h2 className="package-webcam-title">📷 노트북 웹캠</h2> */}
       <div className="webcam-wrapper">
         <div className="webcam-container">
