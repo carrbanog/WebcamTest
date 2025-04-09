@@ -121,7 +121,6 @@ const PackageWebcam = () => {
       <button className="record-button" onClick={startBackgroundRecording}>
         이전 녹화 시작
       </button>
-      <InputNum />
       {/* <h2 className="package-webcam-title">📷 노트북 웹캠</h2> */}
       <div className="webcam-wrapper">
         <div className="webcam-container">

@@ -32,8 +32,8 @@ const Header = () => {
             </li>
             <li className="nav-item">
               <Link
-                to="/register"
-                className={`nav-link ${isActive("/register")}`}
+                to="/inputnum"
+                className={`nav-link ${isActive("/inputnum")}`}
               >
                 번호등록
               </Link>
