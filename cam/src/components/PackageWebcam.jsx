@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { uploadVideo, sendSMS } from "../api/api";
+import { uploadVideo, sendSMS, testConnection } from "../api/api";
 import warningSound from "../../public/warning-sound.wav";
 import "./PackageWebcam.css";
 import InputNum from "./InputNum";
@@ -58,8 +58,8 @@ const PackageWebcam = () => {
 
     backgroundRecorderRef.current.ondataavailable = (event) => {
       tempChunks.push(event.data);
-      if (tempChunks.length > 40) {
-        tempChunks = tempChunks.slice(40);
+      if (tempChunks.length > 3) {
+        tempChunks.shift();
       }
       const combinedBlob = new Blob(tempChunks, { type: "video/webm" });
       setPrevVideoBlob([combinedBlob]);
@@ -100,9 +100,10 @@ const PackageWebcam = () => {
             return;
           }
           console.log(phoneNum);
-          await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
+          // await testConnection();
+          // await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
           // await uploadVideo(prevVideoBlob[0], latitude, longitude);
-          await sendSMS(latitude, longitude, phoneNum);
+          // await sendSMS(latitude, longitude, phoneNum);
         },
         (error) => {
           console.error(error);
@@ -161,9 +162,6 @@ const PackageWebcam = () => {
           </button>
         )}
       </div>
-      <Link to="/savevideo" className="save-video-link">
-        저장된 영상 보기
-      </Link>
     </div>
   );
 };

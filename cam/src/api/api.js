@@ -63,4 +63,20 @@ export const callSavedVideo = async () => {
   }
 };
 
+export const testConnection = async () => {
+  try {
+    const res = await fetch("http://10.1.7.161:8000/test", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: "프론트에서 보낸 테스트 메시지" }),
+    });
+
+    const data = await res.json();
+    console.log("서버 응답:", data);
+  } catch (err) {
+    console.error("연결 실패:", err);
+  }
+};
 // export default { uploadVideo, sendSMS };

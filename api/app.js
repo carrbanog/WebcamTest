@@ -35,6 +35,7 @@ const upload = multer({ dest: "uploads/" });
 app.use("/upload", videoRoutes);
 app.use("/videos", getLoadVideoRoutes);
 app.use("/send-sms", postSendRouter);
+// app.use("/gesture", post);
 
 // app.post("/upload", upload.single("video"), async (req, res) => {
 //   console.log("받은 파일: ", req.file);
