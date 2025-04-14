@@ -12,6 +12,8 @@ const postSendRouter = require("./routes/postSendRoutes");
 
 const app = express();
 const local = "http://localhost:5173";
+const build = "http://localhost:3000";
+
 app.use(
   cors({
     origin: local, // ✅ 프론트엔드 URL 허용

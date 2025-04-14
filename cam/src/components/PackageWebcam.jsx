@@ -15,6 +15,7 @@ const PackageWebcam = () => {
   const [backGroundRecording, setBackGroundRecording] = useState(false);
   const [videoBlobs, setVideoBlobs] = useState([]);
   const [prevVideoBlob, setPrevVideoBlob] = useState([]);
+  const [level, setLevel] = useState("");
   const warningSound = new Audio("/warning-sound.wav");
 
   // useEffect(() => {
@@ -58,7 +59,7 @@ const PackageWebcam = () => {
 
     backgroundRecorderRef.current.ondataavailable = (event) => {
       tempChunks.push(event.data);
-      if (tempChunks.length > 3) {
+      if (tempChunks.length > 15) {
         tempChunks.shift();
       }
       const combinedBlob = new Blob(tempChunks, { type: "video/webm" });
@@ -79,7 +80,9 @@ const PackageWebcam = () => {
   };
 
   const startRecording = () => {
-    // warningSound.play();
+    if (level === "level1") {
+      // warningSound.play();
+    }
     setRecording(true);
     const stream = webcamRef.current.stream;
     mediaRecorderRef.current = new MediaRecorder(stream);
@@ -94,7 +97,8 @@ const PackageWebcam = () => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          const phoneNum = localStorage.getItem("phoneNum"); // 📱 번호 불러오기
+          const phoneNum = localStorage.getItem(level); // 📱 번호 불러오기
+          console.log(phoneNum);
           if (!phoneNum) {
             alert("휴대폰 번호가 저장되어 있지 않습니다!");
             return;
@@ -102,8 +106,7 @@ const PackageWebcam = () => {
           console.log(phoneNum);
           // await testConnection();
           // await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
-          // await uploadVideo(prevVideoBlob[0], latitude, longitude);
-          // await sendSMS(latitude, longitude, phoneNum);
+          // await sendSMS(latitude, longitude, phoneNum, level);
         },
         (error) => {
           console.error(error);
@@ -118,6 +121,13 @@ const PackageWebcam = () => {
   };
   return (
     <div className="package-webcam-container">
+      <div className="button">
+        <button onClick={() => setLevel("level1")}>Level 1</button>
+        <button onClick={() => setLevel("level2")}>Level 2</button>
+        <button onClick={() => setLevel("level3")}>Level 3</button>
+
+        <p>선택된 레벨: {level}</p>
+      </div>
       <button className="record-button" onClick={startBackgroundRecording}>
         이전 녹화 시작
       </button>

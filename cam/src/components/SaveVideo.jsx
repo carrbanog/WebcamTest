@@ -38,31 +38,31 @@ const SaveVideo = () => {
     fetchVideos();
   }, [fetchVideos]);
 
-  const performanceMetrics = useMemo(() => {
-    if (savedVideo.length > 0 && !hasLoggedPerformance.current) {
-      const renderTime = performance.now() - renderStartTime.current;
-      hasLoggedPerformance.current = true;
+  // const performanceMetrics = useMemo(() => {
+  //   if (savedVideo.length > 0 && !hasLoggedPerformance.current) {
+  //     const renderTime = performance.now() - renderStartTime.current;
+  //     hasLoggedPerformance.current = true;
 
-      return {
-        dataFetchTime: performance.now() - dataFetchStartTime.current,
-        renderTime,
-        totalVideos: savedVideo.length,
-      };
-    }
-    return null;
-  }, [savedVideo]);
+  //     return {
+  //       dataFetchTime: performance.now() - dataFetchStartTime.current,
+  //       renderTime,
+  //       totalVideos: savedVideo.length,
+  //     };
+  //   }
+  //   return null;
+  // }, [savedVideo]);
 
-  useEffect(() => {
-    if (performanceMetrics) {
-      console.log("=== 성능 측정 결과 ===");
-      console.log(
-        `데이터 로딩 시간: ${performanceMetrics.dataFetchTime.toFixed(2)}ms`
-      );
-      console.log(`렌더링 시간: ${performanceMetrics.renderTime.toFixed(2)}ms`);
-      console.log(`총 비디오 수: ${performanceMetrics.totalVideos}`);
-      console.log("=====================");
-    }
-  }, [performanceMetrics]);
+  // useEffect(() => {
+  //   if (performanceMetrics) {
+  //     console.log("=== 성능 측정 결과 ===");
+  //     console.log(
+  //       `데이터 로딩 시간: ${performanceMetrics.dataFetchTime.toFixed(2)}ms`
+  //     );
+  //     console.log(`렌더링 시간: ${performanceMetrics.renderTime.toFixed(2)}ms`);
+  //     console.log(`총 비디오 수: ${performanceMetrics.totalVideos}`);
+  //     console.log("=====================");
+  //   }
+  // }, [performanceMetrics]);
 
   if (isLoading) {
     return <div className="loading">로딩 중...</div>;
@@ -74,13 +74,6 @@ const SaveVideo = () => {
 
   return (
     <div className="save-video-container">
-      <div className="header">
-        <h1 className="title">저장된 영상 목록</h1>
-        <Link to="/" className="back-button">
-          돌아가기
-        </Link>
-      </div>
-
       {savedVideo.length === 0 ? (
         <p className="no-videos">저장된 영상이 없습니다.</p>
       ) : (

@@ -35,7 +35,7 @@ const Header = () => {
                 to="/inputnum"
                 className={`nav-link ${isActive("/inputnum")}`}
               >
-                번호등록
+                상황별 대응
               </Link>
             </li>
             <li className="nav-item">
