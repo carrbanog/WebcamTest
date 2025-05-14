@@ -6,6 +6,8 @@ import { uploadVideo, sendSMS, testConnection } from "../api/api";
 import warningSound from "../../public/warning-sound.wav";
 import "./PackageWebcam.css";
 import InputNum from "./InputNum";
+import { io } from "socket.io-client"; // 상단 import 추가
+import { sendFrameToServer } from "../api/api1";
 
 const PackageWebcam = () => {
   const webcamRef = useRef(null);
@@ -47,6 +49,10 @@ const PackageWebcam = () => {
   // console.log(mediaRecorderRef.current);
   // console.log(videoBlob);
 
+  // const socket = io("http://10.1.7.161:8000", {
+  //   transports: ["websocket"],
+  // });
+
   const startBackgroundRecording = () => {
     if (!webcamRef.current || !webcamRef.current.stream) {
       console.error("웹캠 스트림이 준비되지 않았습니다.");
@@ -57,14 +63,19 @@ const PackageWebcam = () => {
     backgroundRecorderRef.current = new MediaRecorder(stream);
     let tempChunks = [];
 
-    backgroundRecorderRef.current.ondataavailable = (event) => {
+    backgroundRecorderRef.current.ondataavailable = async (event) => {
+      const chunk = event.data;
       tempChunks.push(event.data);
-      if (tempChunks.length > 15) {
+      if (tempChunks.length > 60) {
         tempChunks.shift();
       }
       const combinedBlob = new Blob(tempChunks, { type: "video/webm" });
       setPrevVideoBlob([combinedBlob]);
+
+      //실시간 영상 전송
+      await testConnection(chunk);
     };
+
     backgroundRecorderRef.current.start(1000);
     setBackGroundRecording(true);
     console.log("이전 녹화 시작");
@@ -103,8 +114,7 @@ const PackageWebcam = () => {
             alert("휴대폰 번호가 저장되어 있지 않습니다!");
             return;
           }
-          console.log(phoneNum);
-          // await testConnection();
+          console.log(level);
           // await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
           // await sendSMS(latitude, longitude, phoneNum, level);
         },
@@ -152,6 +162,7 @@ const PackageWebcam = () => {
           />
         </div>
       </div>
+      <div className="getLevel">{level}</div>
       <div className="button-container">
         {recording ? (
           <button className="record-button recording" onClick={stopRecording}>

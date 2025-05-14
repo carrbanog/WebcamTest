@@ -63,20 +63,36 @@ export const callSavedVideo = async () => {
   }
 };
 
-export const testConnection = async () => {
-  try {
-    const res = await fetch("http://10.1.7.161:8000/test", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message: "프론트에서 보낸 테스트 메시지" }),
-    });
+export async function testConnection(blob) {
+  const formData = new FormData();
+  formData.append("video_chunk", blob);
 
+  try {
+    const res = await fetch("http://10.1.6.242:5000/test", {
+      method: "POST",
+      body: formData,
+    });
     const data = await res.json();
-    console.log("서버 응답:", data);
+    return data;
   } catch (err) {
-    console.error("연결 실패:", err);
+    console.error("영상 청크 전송 실패:", err);
   }
-};
+}
+
+// export async function testConnection() {
+//   const formData = new FormData();
+//   formData.append("message", "Hello from frontend"); // 테스트용 문자열 추가
+
+//   try {
+//     const response = await fetch("http://10.1.6.242:5000/test", {
+//       method: "POST",
+//       body: formData,
+//     });
+
+//     const data = await response.json();
+//     return data;
+//   } catch (err) {
+//     console.error("문자 전송 실패:", err);
+//   }
+// }
 // export default { uploadVideo, sendSMS };

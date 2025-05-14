@@ -18,13 +18,14 @@ const Video = ({ video, baseUrl }) => {
     () => `위도: ${video.latitude}, 경도: ${video.longitude}`,
     [video.latitude, video.longitude]
   );
-
+  console.log(video);
   return (
     <div className="video-item">
       <div className="video-pair">
         <div className="video-container" style={videoContainerStyle}>
           <h3 className="video-title">사건 이전 영상</h3>
           <h4 className="video-info">{locationInfo}</h4>
+          <h4 className="video-date">{video.uploadDate}</h4>
           <video controls className="video-player" preload="metadata">
             <source
               src={`${baseUrl}/videos/${video.prevFileName}`}
@@ -36,6 +37,7 @@ const Video = ({ video, baseUrl }) => {
         <div className="video-container" style={videoContainerStyle}>
           <h3 className="video-title">사건 영상</h3>
           <h4 className="video-info">{locationInfo}</h4>
+          <h4 className="video-date">{video.uploadDate}</h4>
           <video controls className="video-player" preload="metadata">
             <source
               src={`${baseUrl}/videos/${video.fileName}`}
