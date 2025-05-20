@@ -81,6 +81,83 @@ export const testConnection = async (blob) => {
   }
 };
 
+export const testConnection1 = async (blob) => {
+  try {
+    // 1. 비디오 요소 생성
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(blob);
+    video.muted = true;
+    video.playsInline = true;
+
+    // 2. 비디오 로드 대기
+    await new Promise((resolve, reject) => {
+      video.oncanplay = () => resolve();
+      video.onerror = () => reject(new Error("비디오 로드 실패"));
+    });
+
+    // 3. 캔버스를 사용하여 프레임 추출
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const frameBlob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.95)
+    );
+
+    // 메모리 정리
+    URL.revokeObjectURL(video.src);
+
+    if (!frameBlob) {
+      throw new Error("프레임 변환 실패");
+    }
+
+    // 4. 프레임을 서버로 전송
+    const formData = new FormData();
+    formData.append("frame", frameBlob, "frame.jpg");
+
+    const res = await fetch("http://10.2.13.236:3000/recognize-gesture", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      throw new Error(`서버 오류: ${res.status}`);
+    }
+
+    const data = await res.json();
+    console.log("서버 응답:", data);
+    return data;
+  } catch (err) {
+    console.error("프레임 전송 실패:", err);
+  }
+};
+
+export const testConnection2 = async (dataURL) => {
+  try {
+    const res = await fetch("http://10.2.13.236:3000/recognize-gesture", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // JSON으로 보낼 때 꼭 설정
+      },
+      body: JSON.stringify({ image: dataURL }), // { image: "data:image/jpeg;base64,..." } 이런 형태로 보냄
+    });
+    console.log(dataURL);
+
+    if (!res.ok) {
+      throw new Error(`서버 에러: ${res.status}`);
+    }
+    console.log(res);
+    const data = await res.json();
+    console.log("서버 응답:", data);
+    return data;
+  } catch (err) {
+    console.error("이미지 전송 실패:", err);
+  }
+};
+
 export const extractFramesFromBlob = async (blob, onFrame) => {
   return new Promise((resolve, reject) => {
     console.log(blob);
