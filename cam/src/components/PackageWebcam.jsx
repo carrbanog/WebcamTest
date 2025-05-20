@@ -2,7 +2,12 @@ import React, { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { uploadVideo, sendSMS, testConnection } from "../api/api";
+import {
+  uploadVideo,
+  sendSMS,
+  testConnection,
+  extractFramesFromBlob,
+} from "../api/api";
 import warningSound from "../../public/warning-sound.wav";
 import "./PackageWebcam.css";
 import InputNum from "./InputNum";
@@ -75,15 +80,21 @@ const PackageWebcam = () => {
 
     backgroundRecorderRef.current.ondataavailable = async (event) => {
       const chunk = event.data;
+      await testConnection(chunk);
+
+      // try {
+      //   await extractFramesFromBlob(chunk, async (frameBlob) => {
+      //     await testConnection(frameBlob);
+      //   });
+      // } catch (error) {
+      //   console.error("프레임 추출 실패:", error);
+      // }
       tempChunks.push(event.data);
       if (tempChunks.length > 60) {
         tempChunks.shift();
       }
       const combinedBlob = new Blob(tempChunks, { type: "video/webm" });
       setPrevVideoBlob([combinedBlob]);
-
-      //실시간 영상 전송
-      // await testConnection(chunk);
     };
 
     backgroundRecorderRef.current.start(1000);
