@@ -23,7 +23,7 @@ const Video = ({ video, baseUrl }) => {
     <div className="video-item">
       <div className="video-pair">
         <div className="video-container" style={videoContainerStyle}>
-          <h3 className="video-title">사건 이전 영상</h3>
+          <h3 className="video-title">사건 발생 이전 영상</h3>
           <h4 className="video-info">{locationInfo}</h4>
           <h4 className="video-date">{video.uploadDate}</h4>
           <video controls className="video-player" preload="metadata">
@@ -35,7 +35,7 @@ const Video = ({ video, baseUrl }) => {
           </video>
         </div>
         <div className="video-container" style={videoContainerStyle}>
-          <h3 className="video-title">사건 영상</h3>
+          <h3 className="video-title">사건건 발생 영상</h3>
           <h4 className="video-info">{locationInfo}</h4>
           <h4 className="video-date">{video.uploadDate}</h4>
           <video controls className="video-player" preload="metadata">

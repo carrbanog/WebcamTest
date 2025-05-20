@@ -67,7 +67,7 @@ const PackageWebcam = () => {
   //   transports: ["websocket"],
   // });
 
-  //웹 페이지에 접속하고 버튼을 누르면 계속 녹화를 실행
+  //웹 페이지에 접속하고 버튼을 누르면 계속 녹화를 실행 blob로 보냄냄
   const startBackgroundRecording = () => {
     if (!webcamRef.current || !webcamRef.current.stream) {
       console.error("웹캠 스트림이 준비되지 않았습니다.");
@@ -82,13 +82,6 @@ const PackageWebcam = () => {
       const chunk = event.data;
       await testConnection(chunk);
 
-      // try {
-      //   await extractFramesFromBlob(chunk, async (frameBlob) => {
-      //     await testConnection(frameBlob);
-      //   });
-      // } catch (error) {
-      //   console.error("프레임 추출 실패:", error);
-      // }
       tempChunks.push(event.data);
       if (tempChunks.length > 60) {
         tempChunks.shift();
@@ -101,6 +94,75 @@ const PackageWebcam = () => {
     setBackGroundRecording(true);
     console.log("이전 녹화 시작");
   };
+
+  // frame으로 보내는 코드
+  // const startBackgroundRecording = () => {
+  //   if (!webcamRef.current || !webcamRef.current.stream) {
+  //     console.error("웹캠 스트림이 준비되지 않았습니다.");
+  //     return;
+  //   }
+
+  //   const stream = webcamRef.current.stream;
+  //   backgroundRecorderRef.current = new MediaRecorder(stream);
+  //   let tempChunks = [];
+
+  //   const convertChunkToFrame = async (chunk) => {
+  //     try {
+  //       const video = document.createElement("video");
+  //       video.src = URL.createObjectURL(chunk);
+  //       video.muted = true;
+  //       video.playsInline = true;
+
+  //       await new Promise((resolve, reject) => {
+  //         video.oncanplay = () => resolve();
+  //         video.onerror = () => reject(new Error("비디오 로드 실패"));
+  //       });
+
+  //       const canvas = document.createElement("canvas");
+  //       canvas.width = video.videoWidth;
+  //       canvas.height = video.videoHeight;
+
+  //       const ctx = canvas.getContext("2d");
+  //       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  //       const frameBlob = await new Promise((resolve) =>
+  //         canvas.toBlob(resolve, "image/jpeg", 0.95)
+  //       );
+
+  //       URL.revokeObjectURL(video.src);
+  //       return frameBlob;
+  //     } catch (error) {
+  //       console.error("프레임 변환 실패:", error);
+  //       return null;
+  //     }
+  //   };
+
+  //   backgroundRecorderRef.current.ondataavailable = async (event) => {
+  //     const chunk = event.data;
+
+  //     // 프레임으로 변환 후 서버로 전송
+  //     const frameBlob = await convertChunkToFrame(chunk);
+  //     if (frameBlob) {
+  //       try {
+  //         await testConnection(frameBlob); // 서버로 프레임 전송
+  //       } catch (err) {
+  //         console.error("프레임 서버 전송 실패:", err);
+  //       }
+  //     }
+
+  //     // 이전 영상 저장용
+  //     tempChunks.push(event.data);
+  //     if (tempChunks.length > 60) {
+  //       tempChunks.shift();
+  //     }
+  //     const combinedBlob = new Blob(tempChunks, { type: "video/webm" });
+  //     setPrevVideoBlob([combinedBlob]);
+  //   };
+
+  //   backgroundRecorderRef.current.start(1000); // 1초마다 청크 생성
+  //   setBackGroundRecording(true);
+  //   console.log("이전 녹화 시작");
+  // };
 
   const stopBackgroundRecording = () => {
     if (backgroundRecorderRef.current) {
@@ -122,7 +184,7 @@ const PackageWebcam = () => {
       alert("휴대폰 번호가 저장되어 있지 않습니다!");
       return;
     }
-    await sendSMS(phoneNum, level);
+    // await sendSMS(phoneNum, level);
 
     setRecording(true);
     const stream = webcamRef.current.stream;

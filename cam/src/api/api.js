@@ -68,7 +68,7 @@ export const testConnection = async (blob) => {
   formData.append("video_chunk", blob);
 
   try {
-    const res = await fetch("http://10.2.13.236:3000/process-frame", {
+    const res = await fetch("http://10.2.13.236:3000/recognize-gesture", {
       method: "POST",
       body: formData,
     });
@@ -86,6 +86,7 @@ export const extractFramesFromBlob = async (blob, onFrame) => {
     console.log(blob);
     const url = URL.createObjectURL(blob);
     const video = document.createElement("video");
+    console.log(video);
     video.src = url;
     video.muted = true;
     video.playsInline = true;
