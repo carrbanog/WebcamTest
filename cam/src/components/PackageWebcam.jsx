@@ -20,6 +20,15 @@ const PackageWebcam = () => {
   const [level, setLevel] = useState("");
   const warningSound = new Audio("/warning-sound.wav");
 
+  useEffect(() => {
+    if (level) {
+      if (backGroundRecording) {
+        stopBackgroundRecording();
+      }
+      startRecording();
+    }
+  }, [level]);
+
   // useEffect(() => {
   //   const initializeWebcam = async () => {
   //     try {
@@ -53,6 +62,7 @@ const PackageWebcam = () => {
   //   transports: ["websocket"],
   // });
 
+  //웹 페이지에 접속하고 버튼을 누르면 계속 녹화를 실행
   const startBackgroundRecording = () => {
     if (!webcamRef.current || !webcamRef.current.stream) {
       console.error("웹캠 스트림이 준비되지 않았습니다.");
@@ -73,7 +83,7 @@ const PackageWebcam = () => {
       setPrevVideoBlob([combinedBlob]);
 
       //실시간 영상 전송
-      await testConnection(chunk);
+      // await testConnection(chunk);
     };
 
     backgroundRecorderRef.current.start(1000);
@@ -90,10 +100,19 @@ const PackageWebcam = () => {
     }
   };
 
-  const startRecording = () => {
+  //레벨을 감지하면 이전 녹화가 종료되고 현재 발생한 상황 녹화화
+  const startRecording = async () => {
     if (level === "level1") {
       // warningSound.play();
     }
+    const phoneNum = localStorage.getItem(level); // 📱 번호 불러오기
+    console.log(phoneNum);
+    if (!phoneNum) {
+      alert("휴대폰 번호가 저장되어 있지 않습니다!");
+      return;
+    }
+    await sendSMS(phoneNum, level);
+
     setRecording(true);
     const stream = webcamRef.current.stream;
     mediaRecorderRef.current = new MediaRecorder(stream);
@@ -108,14 +127,8 @@ const PackageWebcam = () => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          const phoneNum = localStorage.getItem(level); // 📱 번호 불러오기
-          console.log(phoneNum);
-          if (!phoneNum) {
-            alert("휴대폰 번호가 저장되어 있지 않습니다!");
-            return;
-          }
           console.log(level);
-          // await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
+          await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
           // await sendSMS(latitude, longitude, phoneNum, level);
         },
         (error) => {
@@ -129,6 +142,7 @@ const PackageWebcam = () => {
     setRecording(false);
     mediaRecorderRef.current.stop(); //녹화 중지, onstop 이벤트 실행
   };
+  // console.log(level);
   return (
     <div className="package-webcam-container">
       <div className="button">

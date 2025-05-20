@@ -37,7 +37,7 @@ export const uploadVideo = async (
   }
 };
 // const phoneNum = process.env.REACT_APP_PHONE_NUMBER;
-export const sendSMS = async (latitude, longitude, phoneNum, level) => {
+export const sendSMS = async (phoneNum, level) => {
   try {
     // let internationalPhone = phoneNum;
     // if (phoneNum.startsWith("0")) {
@@ -45,7 +45,7 @@ export const sendSMS = async (latitude, longitude, phoneNum, level) => {
     // }
     const response = await axios.post(`${BASE_URL1}/send-sms`, {
       to: phoneNum,
-      message: `${level}상황 발생! 현재 위치: https://www.google.com/maps?q=${latitude},${longitude}`,
+      message: `${level}상황 발생! 지금 즉시 구조가 필요합니다.`,
     });
     console.log("📩 문자 전송 성공:", response.data);
   } catch (error) {
