@@ -37,15 +37,27 @@ export const uploadVideo = async (
   }
 };
 // const phoneNum = process.env.REACT_APP_PHONE_NUMBER;
-export const sendSMS = async (phoneNum, level) => {
+// export const sendSMS = async (phoneNum, level) => {
+//   try {
+//     // let internationalPhone = phoneNum;
+//     // if (phoneNum.startsWith("0")) {
+//     //   internationalPhone = "+82" + phoneNum.slice(1);
+//     // }
+//     const response = await axios.post(`${BASE_URL1}/send-sms`, {
+//       to: phoneNum,
+//       message: `${level}상황 발생! 지금 즉시 구조가 필요합니다.`,
+//     });
+//     console.log("📩 문자 전송 성공:", response.data);
+//   } catch (error) {
+//     console.error("🚨 문자 전송 실패:", error);
+//   }
+// };
+
+export const sendSMS = async (phoneNum, level, latitude, longitude) => {
   try {
-    // let internationalPhone = phoneNum;
-    // if (phoneNum.startsWith("0")) {
-    //   internationalPhone = "+82" + phoneNum.slice(1);
-    // }
     const response = await axios.post(`${BASE_URL1}/send-sms`, {
       to: phoneNum,
-      message: `${level}상황 발생! 지금 즉시 구조가 필요합니다.`,
+      message: `${level} 상황 발생! 지금 즉시 구조가 필요합니다.\n위치: https://maps.google.com/?q=${latitude},${longitude}`,
     });
     console.log("📩 문자 전송 성공:", response.data);
   } catch (error) {
@@ -137,22 +149,23 @@ export const testConnection1 = async (blob) => {
 
 export const testConnection2 = async (dataURL) => {
   try {
-    const res = await fetch("http://10.2.13.236:3000/recognize-gesture", {
+    const res = await fetch("http://10.2.13.222:5000/process_gesture", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // JSON으로 보낼 때 꼭 설정
       },
       body: JSON.stringify({ image: dataURL }), // { image: "data:image/jpeg;base64,..." } 이런 형태로 보냄
     });
-    console.log(dataURL);
+    // console.log(dataURL);
 
     if (!res.ok) {
       throw new Error(`서버 에러: ${res.status}`);
     }
-    console.log(res);
+    // console.log(res.gesture);
     const data = await res.json();
-    console.log("서버 응답:", data);
-    return data;
+    console.log(data);
+    console.log("서버 응답:", data.gesture);
+    return data.gesture;
   } catch (err) {
     console.error("이미지 전송 실패:", err);
   }

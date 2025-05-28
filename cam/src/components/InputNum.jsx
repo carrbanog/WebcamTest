@@ -2,26 +2,26 @@ import React, { useState, useEffect } from "react";
 import "./InputNum.css";
 
 const InputNum = () => {
-  const levels = ["level1", "level2", "level3"];
+  const levels = ["Lv1", "Lv2", "Lv3"];
   const [phoneNum, setPhoneNum] = useState({
-    level1: "",
-    level2: "",
-    level3: "",
+    Lv1: "",
+    Lv2: "",
+    Lv3: "",
   });
   const [content, setContent] = useState({
-    level1: "",
-    level2: "",
-    level3: "",
+    Lv1: "",
+    Lv2: "",
+    Lv3: "",
   });
   const [savedPhoneNum, setSavedPhoneNum] = useState({
-    level1: "",
-    level2: "",
-    level3: "",
+    Lv1: "",
+    Lv2: "",
+    Lv3: "",
   });
   const [savedContent, setSavedContent] = useState({
-    level1: "",
-    level2: "",
-    level3: "",
+    Lv1: "",
+    Lv2: "",
+    Lv3: "",
   });
 
   useEffect(() => {
@@ -97,11 +97,11 @@ const InputNum = () => {
                 저장
               </button>
               <div className="level-description">
-                {level === "level1" &&
+                {level === "Lv1" &&
                   "level1 상황이 발생하면 즉시 119와 지정돤 번호로 신고가 가고 사이렌이 울립니다"}
-                {level === "level2" &&
+                {level === "Lv2" &&
                   "level2 상황이 발생하면 즉시 112와 지정된 번허로 신고가 가고 경고 메세지가 재생됩니다."}
-                {level === "level3" &&
+                {level === "Lv3" &&
                   "level3 상황이 발생하면 지정된 번허로 문자를 보냅니다."}
               </div>
             </form>

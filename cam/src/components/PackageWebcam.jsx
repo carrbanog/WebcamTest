@@ -168,16 +168,37 @@ const PackageWebcam = () => {
   // };
 
   //캡쳐해서 보내기
+
   const startBackgroundRecording = () => {
-    if (!webcamRef.current) {
-      console.error("웹캠이 준비되지 않았습니다.");
+    if (!webcamRef.current || !webcamRef.current.stream) {
+      console.error("웹캠 스트림이 준비되지 않았습니다.");
       return;
     }
 
-    setBackGroundRecording(true);
-    console.log("백그라운드 프레임 캡쳐 시작");
+    const stream = webcamRef.current.stream;
+    // MediaRecorder 생성
+    const mediaRecorder = new MediaRecorder(stream);
+    backgroundRecorderRef.current = { mediaRecorder, captureIntervalId: null };
 
-    const captureInterval = setInterval(async () => {
+    let tempChunks = [];
+
+    mediaRecorder.ondataavailable = async (event) => {
+      const chunk = event.data;
+
+      tempChunks.push(chunk);
+      if (tempChunks.length > 60) {
+        tempChunks.shift();
+      }
+      const combinedBlob = new Blob(tempChunks, { type: "video/webm" });
+      setPrevVideoBlob([combinedBlob]);
+    };
+
+    mediaRecorder.start(1000);
+    setBackGroundRecording(true);
+    console.log("이전 녹화 시작");
+
+    // 프레임 캡쳐 및 서버 전송
+    const captureIntervalId = setInterval(async () => {
       if (!webcamRef.current || !webcamRef.current.video) return;
 
       const video = webcamRef.current.video;
@@ -189,66 +210,129 @@ const PackageWebcam = () => {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const dataURL = canvas.toDataURL("image/jpeg", 0.95);
-      console.log(dataURL);
+
       try {
-        await testConnection2(dataURL); // base64 데이터 URL 전송
+        const gesture = await testConnection2(dataURL); // base64 데이터 URL 전송
+
+        if (gesture === "Lv1" || gesture === "Lv2" || gesture === "Lv3") {
+          setLevel(gesture);
+          console.log("Detected gesture level:", gesture);
+
+          // 레벨 감지되면 녹화 중지 함수 호출
+          stopBackgroundRecording();
+        } else {
+          console.log("Invalid gesture level:", gesture);
+        }
       } catch (error) {
         console.error("프레임 서버 전송 실패:", error);
       }
-    }, 1000); // 1초마다 전송
+    }, 500);
 
-    backgroundRecorderRef.current = {
-      stop: () => clearInterval(captureInterval),
-    };
+    backgroundRecorderRef.current.captureIntervalId = captureIntervalId;
   };
 
+  // 녹화 중지 함수
   const stopBackgroundRecording = () => {
     if (backgroundRecorderRef.current) {
-      backgroundRecorderRef.current.stop();
+      // MediaRecorder가 있으면 중지
+      if (backgroundRecorderRef.current.mediaRecorder) {
+        backgroundRecorderRef.current.mediaRecorder.stop();
+      }
+      // 캡쳐 인터벌도 제거
+      if (backgroundRecorderRef.current.captureIntervalId) {
+        clearInterval(backgroundRecorderRef.current.captureIntervalId);
+      }
+
       setBackGroundRecording(false);
       console.log(prevVideoBlob[0]);
       console.log("이전 녹화 중지");
     }
   };
 
-  //레벨을 감지하면 이전 녹화가 종료되고 현재 발생한 상황 녹화화
+  //레벨을 감지하면 이전 녹화가 종료되고 현재 발생한 상황 녹화
+  //위치 정보 포함 x
+  // const startRecording = async () => {
+  //   console.log(level);
+  //   if (level === "Lv1") {
+  //     // warningSound.play();
+  //   }
+  //   const phoneNum = localStorage.getItem(level); // 📱 번호 불러오기
+  //   // const phoneNum = "+821099737467"; // 📱 번호 불러오기
+  //   console.log(phoneNum);
+  //   if (!phoneNum) {
+  //     alert("휴대폰 번호가 저장되어 있지 않습니다!");
+  //     return;
+  //   }
+  //   await sendSMS(phoneNum, level);
+
+  //   setRecording(true);
+  //   const stream = webcamRef.current.stream;
+  //   mediaRecorderRef.current = new MediaRecorder(stream);
+  //   const chunks = [];
+
+  //   mediaRecorderRef.current.ondataavailable = (event) => {
+  //     chunks.push(event.data);
+  //   };
+  //   mediaRecorderRef.current.onstop = async () => {
+  //     const videoBlob = new Blob(chunks, { type: "video/webm" });
+
+  //     navigator.geolocation.getCurrentPosition(
+  //       async (position) => {
+  //         const { latitude, longitude } = position.coords;
+  //         console.log(level);
+  //         await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
+  //         // await sendSMS(latitude, longitude, phoneNum, level);
+  //       },
+  //       (error) => {
+  //         console.error(error);
+  //       }
+  //     );
+  //   };
+  //   mediaRecorderRef.current.start();
+  // };
+
+  //위치 정보 포함
   const startRecording = async () => {
-    if (level === "level1") {
+    console.log(level);
+    if (level === "Lv1") {
       // warningSound.play();
     }
     const phoneNum = localStorage.getItem(level); // 📱 번호 불러오기
+    // const phoneNum = "+821099737467"; // 📱 번호 불러오기
     console.log(phoneNum);
     if (!phoneNum) {
       alert("휴대폰 번호가 저장되어 있지 않습니다!");
       return;
     }
-    // await sendSMS(phoneNum, level);
 
-    setRecording(true);
-    const stream = webcamRef.current.stream;
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    const chunks = [];
+    // 위치 정보를 먼저 받아서 문자 전송
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        await sendSMS(phoneNum, level, latitude, longitude);
 
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      chunks.push(event.data);
-    };
-    mediaRecorderRef.current.onstop = async () => {
-      const videoBlob = new Blob(chunks, { type: "video/webm" });
+        setRecording(true);
+        const stream = webcamRef.current.stream;
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        const chunks = [];
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log(level);
+        mediaRecorderRef.current.ondataavailable = (event) => {
+          chunks.push(event.data);
+        };
+        mediaRecorderRef.current.onstop = async () => {
+          const videoBlob = new Blob(chunks, { type: "video/webm" });
+          // 위치 정보 얻는 부분 삭제하고 uploadVideo만 실행
           await uploadVideo(prevVideoBlob[0], videoBlob, latitude, longitude);
-          // await sendSMS(latitude, longitude, phoneNum, level);
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    };
-    mediaRecorderRef.current.start();
+        };
+        mediaRecorderRef.current.start();
+      },
+      (error) => {
+        console.error(error);
+        alert("위치 정보를 가져올 수 없습니다.");
+      }
+    );
   };
+
   const stopRecording = async () => {
     setRecording(false);
     mediaRecorderRef.current.stop(); //녹화 중지, onstop 이벤트 실행
@@ -257,9 +341,9 @@ const PackageWebcam = () => {
   return (
     <div className="package-webcam-container">
       <div className="button">
-        <button onClick={() => setLevel("level1")}>Level 1</button>
-        <button onClick={() => setLevel("level2")}>Level 2</button>
-        <button onClick={() => setLevel("level3")}>Level 3</button>
+        <button onClick={() => setLevel("Lv1")}>Level 1</button>
+        <button onClick={() => setLevel("Lv2")}>Level 2</button>
+        <button onClick={() => setLevel("Lv3")}>Level 3</button>
 
         <p>선택된 레벨: {level}</p>
       </div>
