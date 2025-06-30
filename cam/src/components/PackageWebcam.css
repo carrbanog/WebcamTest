@@ -272,3 +272,51 @@ label {
     background-color: #0b5ed7;
   }
 }
+
+.getLevel {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.level-alert {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+}
+
+.level-icon {
+  font-size: 1.5rem;
+  margin-right: 12px;
+}
+
+.level-text {
+  font-size: 1.3rem;
+}
+
+.level-status {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #f0f0f0;
+  color: #666;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

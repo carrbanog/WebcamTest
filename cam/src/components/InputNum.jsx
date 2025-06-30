@@ -102,7 +102,7 @@ const InputNum = () => {
                 {level === "Lv2" &&
                   "level2 상황이 발생하면 즉시 112와 지정된 번허로 신고가 가고 경고 메세지가 재생됩니다."}
                 {level === "Lv3" &&
-                  "level3 상황이 발생하면 지정된 번허로 문자를 보냅니다."}
+                  "level3 상황이 발생하면 지정된 번호로 문자를 보냅니다."}
               </div>
             </form>
             <div className="saved-info">

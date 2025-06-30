@@ -60,14 +60,6 @@ const PackageWebcam = () => {
   //   initializeWebcam();
   // }, []);
 
-  // console.log(webcamRef.current);
-  // console.log(mediaRecorderRef.current);
-  // console.log(videoBlob);
-
-  // const socket = io("http://10.1.7.161:8000", {
-  //   transports: ["websocket"],
-  // });
-
   //웹 페이지에 접속하고 버튼을 누르면 계속 녹화를 실행 blob로 보냄냄
 
   //blob으로 보내기
@@ -293,13 +285,17 @@ const PackageWebcam = () => {
 
   //위치 정보 포함
   const startRecording = async () => {
-    console.log(level);
     if (level === "Lv1") {
-      // warningSound.play();
+      warningSound.play();
+      // 10초 후에 소리 중지
+      setTimeout(() => {
+        warningSound.pause();
+        warningSound.currentTime = 0; // 소리 위치를 처음으로 되돌림
+      }, 10000);
     }
     const phoneNum = localStorage.getItem(level); // 📱 번호 불러오기
-    // const phoneNum = "+821099737467"; // 📱 번호 불러오기
-    console.log(phoneNum);
+    const content = localStorage.getItem(`${level}-content`);
+
     if (!phoneNum) {
       alert("휴대폰 번호가 저장되어 있지 않습니다!");
       return;
@@ -309,7 +305,7 @@ const PackageWebcam = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        await sendSMS(phoneNum, level, latitude, longitude);
+        await sendSMS(phoneNum, level, latitude, longitude, content);
 
         setRecording(true);
         const stream = webcamRef.current.stream;
@@ -340,13 +336,13 @@ const PackageWebcam = () => {
   // console.log(level);
   return (
     <div className="package-webcam-container">
-      <div className="button">
+      {/* <div className="button">
         <button onClick={() => setLevel("Lv1")}>Level 1</button>
         <button onClick={() => setLevel("Lv2")}>Level 2</button>
         <button onClick={() => setLevel("Lv3")}>Level 3</button>
 
         <p>선택된 레벨: {level}</p>
-      </div>
+      </div> */}
       <button className="record-button" onClick={startBackgroundRecording}>
         이전 녹화 시작
       </button>
@@ -371,7 +367,16 @@ const PackageWebcam = () => {
           />
         </div>
       </div>
-      <div className="getLevel">{level}</div>
+      <div className="getLevel">
+        {level ? (
+          <div className="level-alert">
+            <span className="level-icon">⚠️</span>
+            <span className="level-text">{level} 상황 감지!</span>
+          </div>
+        ) : (
+          <div className="level-status">상황 모니터링 중...</div>
+        )}
+      </div>
       <div className="button-container">
         {recording ? (
           <button className="record-button recording" onClick={stopRecording}>

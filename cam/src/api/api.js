@@ -53,11 +53,17 @@ export const uploadVideo = async (
 //   }
 // };
 
-export const sendSMS = async (phoneNum, level, latitude, longitude) => {
+export const sendSMS = async (
+  phoneNum,
+  level,
+  latitude,
+  longitude,
+  content
+) => {
   try {
     const response = await axios.post(`${BASE_URL1}/send-sms`, {
       to: phoneNum,
-      message: `${level} 상황 발생! 지금 즉시 구조가 필요합니다.\n위치: https://maps.google.com/?q=${latitude},${longitude}`,
+      message: `${content}\n위치: https://maps.google.com/?q=${latitude},${longitude}`,
     });
     console.log("📩 문자 전송 성공:", response.data);
   } catch (error) {
@@ -80,7 +86,7 @@ export const testConnection = async (blob) => {
   formData.append("video_chunk", blob);
 
   try {
-    const res = await fetch("http://10.2.13.236:3000/recognize-gesture", {
+    const res = await fetch("http://10.2.13.128:3000/recognize-gesture", {
       method: "POST",
       body: formData,
     });
@@ -149,7 +155,7 @@ export const testConnection1 = async (blob) => {
 
 export const testConnection2 = async (dataURL) => {
   try {
-    const res = await fetch("http://10.2.13.222:5000/process_gesture", {
+    const res = await fetch("http://10.2.13.128:5000/process_gesture", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // JSON으로 보낼 때 꼭 설정
